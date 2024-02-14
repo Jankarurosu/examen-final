@@ -1,0 +1,134 @@
+class Libro {
+    constructor(titulo, autor, editorial, genero, año, precio) {
+        this.titulo = titulo;
+        this.autor = autor;
+        this.editorial = editorial;
+        this.genero = genero;
+        this.año = año;
+        this.precio = precio;
+    }
+}
+
+class Interfaz {
+    // Función para agregar libro a la lista en la interfaz
+    agregarLibroALista(libro) {
+        const lista = document.getElementById('listaLibros');
+        // Crear elemento de fila de tabla
+        const fila = document.createElement('tr');
+        // Insertar columnas
+        fila.innerHTML = `
+            <td>${libro.titulo}</td>
+            <td>${libro.autor}</td>
+            <td>${libro.editorial}</td>
+            <td>${libro.genero}</td>
+            <td>${libro.año}</td>
+            <td>${libro.precio}</td>
+        `;
+
+        lista.appendChild(fila);
+    }
+
+    // Mostrar mensaje en la interfaz
+    mostrarAlerta(mensaje, claseNombre) {
+        // Crear div
+        const div = document.createElement('div');
+        // Agregar clases
+        div.className = `alert ${claseNombre}`;
+        // Agregar texto de alerta
+        div.appendChild(document.createTextNode(mensaje));
+        // Obtener contenedor padre
+        const contenedor = document.querySelector('.container');
+        const formulario = document.querySelector('.mb-5');
+        // Insertar alerta
+        contenedor.insertBefore(div, formulario);
+        // Desaparecer después de 3 segundos
+        setTimeout(() => {
+            document.querySelector('.alert').remove();
+        }, 3000);
+    }
+
+    // Limpiar campos del formulario
+    limpiarCampos() {
+        document.getElementById('inputTitulo').value = '';
+        document.getElementById('inputAutor').value = '';
+        document.getElementById('inputEditorial').value = '';
+        document.getElementById('inputGenero').value = '';
+        document.getElementById('inputAño').value = '';
+        document.getElementById('inputPrecio').value = '';
+    }
+}
+
+// Clase para almacenamiento local
+class Almacenamiento {
+
+    // Obtener libros del almacenamiento local
+    static obtenerLibros() {
+        let libros;
+        if (localStorage.getItem('libros') === null) {
+            libros = [];
+        } else {
+            libros = JSON.parse(localStorage.getItem('libros'));
+        }
+        return libros;
+    }
+
+    // Mostrar libros en la interfaz
+    static mostrarLibros() {
+        const libros = Almacenamiento.obtenerLibros();
+
+        libros.forEach(function (libro) {
+            const interfaz = new Interfaz();
+            // Agregar libro a la lista
+            interfaz.agregarLibroALista(libro);
+        })
+    }
+
+    // Agregar detalles del libro al almacenamiento local
+    static agregarLibro(libro) {
+        const libros = Almacenamiento.obtenerLibros();
+        libros.push(libro);
+
+        // Almacenar en el almacenamiento local
+        localStorage.setItem('libros', JSON.stringify(libros));
+    }
+}
+
+// Evento de carga del DOM
+document.addEventListener('DOMContentLoaded', Almacenamiento.mostrarLibros());
+
+// Evento para agregar libro
+document.getElementById('btnAgregar').addEventListener('click',
+    function (e) {
+        // Obtener valores del formulario
+        const titulo = document.getElementById('inputTitulo').value;
+        const autor = document.getElementById('inputAutor').value;
+        const editorial = document.getElementById('inputEditorial').value;
+        const genero = document.getElementById('inputGenero').value;
+        const año = document.getElementById('inputAño').value;
+        const precio = document.getElementById('inputPrecio').value;
+
+        // Instanciar un libro
+        const libro = new Libro(titulo, autor, editorial, genero, año, precio);
+
+        // Instanciar objeto de la interfaz
+        const interfaz = new Interfaz();
+
+        // Validar
+        if (titulo === '' || autor === '' || editorial === '' || genero === '' || año === '' || precio === '') {
+            // Mostrar alerta de error
+            interfaz.mostrarAlerta('Por favor completa todos los campos', 'error');
+        } else {
+            // Agregar libro a la lista
+            interfaz.agregarLibroALista(libro);
+
+            // Mostrar alerta de éxito
+            interfaz.mostrarAlerta('Libro agregado', 'success');
+            // Agregar al almacenamiento local
+            Almacenamiento.agregarLibro(libro);
+
+            // Limpiar campos del formulario
+            interfaz.limpiarCampos();
+        }
+
+        e.preventDefault();
+    });
