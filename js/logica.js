@@ -23,7 +23,7 @@ class Interfaz {
         <td>${libro.editorial}</td>
         <td>${libro.genero}</td>
         <td>${libro.año}</td>
-        <td>${libro.precio}</td>
+        <td>S/. ${libro.precio}</td>
         <td>
         <!--<button class="btn btn-warning btn-sm btn-actualizar">Actualizar</button>-->
         <button class="btn btn-danger btn-sm btn-borrar">Borrar</button>
